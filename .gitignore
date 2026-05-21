@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+TestResults/
+
+# IDE/editor state
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Local environment and secrets
+.env
+*.Development.json
+appsettings.Development.json
+
+# Generated reports and logs
+RawPostingsFilter/Reports/
+*.log
+
+# Docker/local runtime state
+.docker/
+docker-compose.override.yml
+
