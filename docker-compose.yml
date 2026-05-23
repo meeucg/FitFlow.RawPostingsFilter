@@ -10,7 +10,7 @@ services:
       timeout: 5s
       retries: 10
 
-  postgres:
+  raw-postings-filter-postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: raw_postings_filter
@@ -26,24 +26,8 @@ services:
     build:
       context: .
       dockerfile: RawPostingsFilter/Dockerfile
-    environment:
-      ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=raw_postings_filter;Username=postgres;Password=postgres;GSS Encryption Mode=Disable
-      Deduplication__SimilarityThreshold: "0.80"
-      TextAI__ApiEndpoint: ${TEXTAI_API_ENDPOINT:-https://polza.ai/api/v1}
-      TextAI__ApiKey: ${TEXTAI_API_KEY:-__TEXTAI_API_KEY__}
-      AIModels__defaultModel__modelAlias: ${NORMALIZER_MODEL_ALIAS:-Grok 4.20}
-      AIModels__defaultModel__modelName: ${NORMALIZER_MODEL_NAME:-x-ai/grok-4.20}
-      AIModels__defaultModel__supportsJsonOutput: "true"
-      AIModels__defaultModel__supportsFunctionCalling: ${NORMALIZER_MODEL_SUPPORTS_FUNCTION_CALLING:-false}
-      AIModels__defaultModel__RequestBodyExtensions__reasoning__effort: "low"
-      RabbitMq__Host: rabbitmq
-      RabbitMq__Port: "5672"
-      RabbitMq__Username: guest
-      RabbitMq__Password: guest
-      RabbitMq__ConsumerCount: "5"
-      RabbitMq__PrefetchCount: "1"
     depends_on:
-      postgres:
+      raw-postings-filter-postgres:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy

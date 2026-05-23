@@ -1,22 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using RawPostingsFilter.Application;
 using RawPostingsFilter.HostedServices;
 using RawPostingsFilter.Infrastructure;
+using RawPostingsFilter.Observability;
 using RawPostingsFilter.Persistence;
 
-var builderSettings = new HostApplicationBuilderSettings
-{
-    Args = args
-};
-
-if (!File.Exists(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"))
-    && File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json")))
-{
-    builderSettings.ContentRootPath = AppContext.BaseDirectory;
-}
-
-var builder = Host.CreateApplicationBuilder(builderSettings);
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddApplication()
@@ -24,7 +12,10 @@ builder.Services
     .AddInfrastructure(builder.Configuration);
 
 builder.Services.AddHostedService<RabbitMqProcessingHostedService>();
+builder.Services.AddFitFlowObservability();
 
-var host = builder.Build();
+var app = builder.Build();
 
-await host.RunAsync();
+app.UseFitFlowObservability();
+
+await app.RunAsync();
